@@ -42,3 +42,63 @@ FROM olist_orders_dataset
 WHERE order_status = 'delivered'
     AND (julianday(order_delivered_customer_date) > julianday(order_estimated_delivery_date)) > 30
 
+-- Finding the state with the most amount of late deliveries
+-- Result: SP with 1820 late deliveries
+SELECT 
+c.customer_state,
+COUNT(*) AS late_deliveries
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE o.order_status = 'delivered'
+	AND date(o.order_delivered_customer_date) > date(o.order_estimated_delivery_date)
+GROUP BY c.customer_state
+ORDER BY late_delIveries DESC
+
+-- We want to determine if SP has the worst delivery performace or if it simply just has the most amount of orders
+-- Find the total number of deliverd orders per state
+-- SP total: 40501
+SELECT 
+c.customer_state,
+COUNT(*) AS delivered_orders
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE o.order_status = 'delivered'
+GROUP BY c.customer_state
+ORDER BY delivered_orders DESC
+
+-- Finding percentage of orders from SP
+-- Result: 42%
+SELECT 
+c.customer_state,
+COUNT(*) * 100.0/96478 AS SP_orders_percentage
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE o.order_status = 'delivered'
+	AND c.customer_state = 'SP'
+
+-- Finding percentage of late deliveries in Sao Paulo
+-- Total: 4.49%
+SELECT 
+c.customer_state,
+COUNT(*) * 100.0 / 40501 AS SP_late_order_percentage
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE o.order_status = 'delivered'
+	AND c.customer_state = 'SP'
+	AND date(o.order_delivered_customer_date) > date(order_estimated_delivery_date)
+
+-- Finding the percentage of late deliveries in RJ for comparison's sake
+-- Interestingly, it was 12.1%
+SELECT 
+c.customer_state,
+COUNT(*) * 100.0 / 12350  -- 12350 is the total number of delivered items in RJ 
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE o.order_status = 'delivered'
+	AND c.customer_state = 'RJ'
+	AND date(o.order_delivered_customer_date) > date(order_estimated_delivery_date)
