@@ -126,3 +126,29 @@ JOIN olist_customers_dataset as c
 WHERE order_status = 'delivered'
 GROUP BY c.customer_state
 ORDER BY percentage_of_late_orders_per_state DESC
+
+-- Finding the state with the highest number of delivered orders for comparison
+-- Restricted the query to show states with 1000 orders or more
+-- Result: CE, BA, and, RJ, with 1279, 3256, 12350
+SELECT 
+c.customer_state,
+COUNT(*) as delivered_orders,
+ SUM(
+	 CASE 
+		WHEN date(order_delivered_customer_date)>date(order_estimated_delivery_date) THEN 1 
+		ELSE 0
+	END  
+) AS late_deliveries,
+ SUM(
+	 CASE 
+		WHEN date(order_delivered_customer_date)>date(order_estimated_delivery_date) THEN 1 
+		ELSE 0
+	END  
+) *100.0/COUNT(*) AS percentage_of_late_orders_per_state
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE order_status = 'delivered'
+GROUP BY c.customer_state
+HAVING delivered_orders >= 1000
+ORDER BY percentage_of_late_orders_per_state DESC

@@ -14,3 +14,5 @@ Out of all late orders, 360 took more than 30 days to deliver -- which is about 
 I also confirmed that out of all delivered orders, the late percentage was 6.77%.
 
 After analyzing the number of late deliveries per state, I found that the states AL, MA, and SE had a late delivery percentage of 21.4%, 17.4%, and 15.2%, which is higher compared to the overall late arrival percentage of 6.77%. However, these states had relatively lower order numbers: 397, 717, and 335 respectively, compared to SP, which had 40501 orders.
+
+When restricting the analysis to show states with 1000 orders or more, Ceara (13.7%), Bahia (12.1%), and Rio de Janeiro (12.1%) had the highest amounts of late delivery rates. RJ stands out because of its high late-delivery rate across 12350 delivered orders, suggestion a pontentially significant area for investigation.
