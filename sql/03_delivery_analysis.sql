@@ -102,3 +102,27 @@ JOIN olist_customers_dataset as c
 WHERE o.order_status = 'delivered'
 	AND c.customer_state = 'RJ'
 	AND date(o.order_delivered_customer_date) > date(order_estimated_delivery_date)
+
+-- Finding the percentages of late deliveries per state in Brazil  
+-- Highest Results: AL, MA, SE, with 397 delivered and 85 late (21.4%), 717 delivered and 125 late(17.4%), and 335 delivered and 51 late (15.2%), respectively
+SELECT 
+c.customer_state,
+COUNT(*) as delivered_orders,
+ SUM(
+	 CASE 
+		WHEN date(order_delivered_customer_date)>date(order_estimated_delivery_date) THEN 1 
+		ELSE 0
+	END  
+) AS late_deliveries,
+ SUM(
+	 CASE 
+		WHEN date(order_delivered_customer_date)>date(order_estimated_delivery_date) THEN 1 
+		ELSE 0
+	END  
+) *100.0/COUNT(*) AS percentage_of_late_orders_per_state
+FROM olist_orders_dataset as o
+JOIN olist_customers_dataset as c
+	ON o.customer_id = c.customer_id
+WHERE order_status = 'delivered'
+GROUP BY c.customer_state
+ORDER BY percentage_of_late_orders_per_state DESC
